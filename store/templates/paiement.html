@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Liste des Paiements{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Liste des Paiements</h2>
+
+    <!-- Tableau des paiements -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center shadow-sm rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>Client</th>
+                    <th>Produit</th>
+                    <th>Montant (TND)</th>
+                    <th>Date de Paiement</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paiement in paiements %}
+                <tr>
+                    <td>{{ paiement.client.nom }} {{ paiement.client.prenom }}</td>
+                    <td>{{ paiement.produit.name }}</td>
+                    <td>{{ paiement.montant }}</td>
+                    <td>{{ paiement.date_paiement|date:"d M Y" }}</td>
+                    <td>
+                        {% if paiement.statut == 'payé' %}
+                            <span class="badge bg-success">Payé</span>
+                        {% elif paiement.statut == 'en_attente' %}
+                            <span class="badge bg-warning text-dark">En Attente</span>
+                        {% else %}
+                            <span class="badge bg-danger">Annulé</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Aucun paiement trouvé.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
