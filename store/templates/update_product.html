@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Modifier le produit{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Modifier le produit</h2>
+    
+    <form method="POST" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="{% url 'show_products' %}" class="btn btn-secondary ms-2">Annuler</a>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}

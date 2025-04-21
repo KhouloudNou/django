@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">📊 Tableau de Bord</h2>
+
+    <!-- Cartes -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">🛒 Produits</h5>
+                    <p class="card-text fs-3">{{ nb_produits }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Clients</h5>
+                    <p class="card-text fs-3">{{ nb_clients }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success text-center shadow">
+                <div class="card-body">
+                    <h5 class="card-title">💰 Chiffre d'affaire</h5>
+                    <p class="card-text fs-3">{{ total_chiffre_affaire }} TND</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header fw-bold">🧾 Statut des paiements</div>
+                <div class="card-body text-center">
+                    <canvas id="paiementsChart" height="180" width="180" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header fw-bold">📈 Chiffre d'affaire par année</div>
+                <div class="card-body">
+                    <canvas id="chiffreAffaireChart" height="180" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header fw-bold">🏆 Produits les plus vendus</div>
+                <div class="card-body">
+                    <canvas id="produitsChart" height="180" style="max-height: 220px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const labelsPaiements = JSON.parse('{{ labels_paiements|escapejs }}');
+    const dataPaiements = JSON.parse('{{ data_paiements|escapejs }}');
+
+    const labelsAnnees = JSON.parse('{{ labels_annees|escapejs }}');
+    const dataChiffres = JSON.parse('{{ data_chiffres|escapejs }}');
+
+    const labelsProduits = JSON.parse('{{ labels_produits|safe }}');
+    const dataProduits = JSON.parse('{{ data_produits|safe }}');
+
+    // Statut des paiements (camembert)
+    new Chart(document.getElementById('paiementsChart'), {
+        type: 'pie',
+        data: {
+            labels: labelsPaiements,
+            datasets: [{
+                label: 'Statut',
+                data: dataPaiements,
+                backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Chiffre d'affaire (courbe)
+    new Chart(document.getElementById('chiffreAffaireChart'), {
+        type: 'line',
+        data: {
+            labels: labelsAnnees,
+            datasets: [{
+                label: 'Chiffre (TND)',
+                data: dataChiffres,
+                fill: false,
+                borderColor: '#007bff',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Produits (barres)
+    new Chart(document.getElementById('produitsChart'), {
+        type: 'bar',
+        data: {
+            labels: labelsProduits,
+            datasets: [{
+                label: 'Quantité vendue',
+                data: dataProduits,
+                backgroundColor: '#17a2b8'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+</script>
+{% endblock %}

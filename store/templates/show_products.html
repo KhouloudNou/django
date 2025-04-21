@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Afficher les produits{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Liste des produits</h2>
+
+    <!-- Barre de recherche -->
+    <div class="mb-4">
+        <form method="GET" action="{% url 'show_products' %}" class="d-flex justify-content-center">
+            <input type="text" name="search" class="form-control w-50" placeholder="Rechercher un produit..." value="{{ request.GET.search }}">
+            <button type="submit" class="btn btn-primary ms-2">Rechercher</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center shadow-sm rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Prix (TND)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" width="80" height="80" class="rounded">
+                        {% else %}
+                            <img src="https://via.placeholder.com/80" alt="Image produit" class="rounded">
+                        {% endif %}
+                    </td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>
+                        <a href="{% url 'update_product' product.id %}" class="btn btn-sm btn-warning me-1">Modifier</a>
+
+                        <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmationModal{{ product.id }}">Supprimer</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Modal de confirmation pour la suppression -->
+{% for product in products %}
+<div class="modal fade" id="confirmationModal{{ product.id }}" tabindex="-1" aria-labelledby="confirmationModalLabel{{ product.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmationModalLabel{{ product.id }}">Confirmer la suppression</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Êtes-vous sûr de vouloir supprimer ce produit ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+        <!-- Formulaire pour supprimer le produit -->
+        <form method="POST" action="{% url 'delete_product' product.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Oui</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
